@@ -1,3 +1,4 @@
 *.txt
 *.bin
 hexdump.exe
+*.bak
