@@ -18,6 +18,7 @@ uses
       nameTweak: TKey16;
     begin
       // Dérive les clés comme rclone
+
       DeriveRcloneKeys(password, salt, dataKey, nameKey, nameTweak);
 
       // Déobfusque le segment
@@ -29,6 +30,7 @@ begin
   if paramcount < 3 then exit;
   if sodium_init() < 0 then raise Exception.Create('libsodium init failed');
   writeln('sodium_init ok');
+  //rclone reveal password (from rclone.conf) to obtain the clear text password and salt
   DeriveRcloneKeys(paramstr(1), paramstr(2), key32);
   writeln('DeriveRcloneKeys ok');
   for i := 0 to High(key32) do Write(IntToHex(key32[i], 2));
