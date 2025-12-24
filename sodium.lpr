@@ -8,7 +8,8 @@ uses
    var
     key32: TKey32;
     i:byte;
-    filename:string;
+    file_in,file_out:string;
+    sr: TSearchRec;
 
     function RcloneDecryptFileNameObfuscate(const encName: string;
                                             const password, salt: string): string;
@@ -24,6 +25,25 @@ uses
       Result := DeobfuscateSegment(encName, nameKey);
     end;
 
+procedure DecryptOneFile(const file_in: string);
+var
+  file_out: string;
+begin
+  if SameText(ExtractFileExt(file_in), '.bin') then
+    file_out := ChangeFileExt(file_in, '')
+  else
+    file_out := ChangeFileExt(file_in, '.dec');
+
+  Writeln(file_in + ' -> ' + file_out);
+
+  try
+    DecryptRcloneFileChunked64K(file_in, file_out, key32);
+  except
+    on e: Exception do
+      Writeln('Erreur: ', e.Message);
+  end;
+end;
+
 begin
   writeln('sodium.exe password salt filename');
   if paramcount < 3 then exit;
@@ -34,9 +54,38 @@ begin
   writeln('DeriveRcloneKeys ok');
   for i := 0 to High(key32) do Write(IntToHex(key32[i], 2));
   writeln();
-  filename:=paramstr(3);
-  writeln('filename='+filename);
-  DecryptRcloneFileChunked64K(filename, 'dec.bin', key32);
-  writeln('output=dec.bin');
+  file_in:=paramstr(3);
+
+  if DirectoryExists(file_in) then
+  begin
+    file_in := ExpandFileName(ParamStr(3));
+
+  //Writeln('Input détecté : ', file_in);
+
+  if DirectoryExists(file_in) then
+  begin
+    //Writeln('Mode dossier');
+
+    file_in := IncludeTrailingPathDelimiter(file_in);
+
+    if FindFirst(file_in + '*', faAnyFile, sr) = 0 then
+    begin
+      repeat
+        if (sr.Name <> '.') and (sr.Name <> '..') then
+          if (sr.Attr and faDirectory) = 0 then
+            DecryptOneFile(file_in + sr.Name);
+      until FindNext(sr) <> 0;
+
+      FindClose(sr);
+    end;
+  end
+  else
+  begin
+    //Writeln('Mode fichier');
+    DecryptOneFile(file_in);
+  end;
+
+  end;
+
 end.
 
