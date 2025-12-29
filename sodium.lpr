@@ -56,11 +56,11 @@ begin
   writeln();
 
   file_in := ExpandFileName(ParamStr(3));
-  Writeln('Input détecté : ', file_in);
+  //Writeln('Input détecté : ', file_in);
 
       if DirectoryExists(file_in) then
       begin
-        Writeln('Mode dossier');
+        //Writeln('Mode dossier');
 
         file_in := IncludeTrailingPathDelimiter(file_in);
 
@@ -77,7 +77,7 @@ begin
       end
       else
       begin
-        Writeln('Mode fichier');
+        //Writeln('Mode fichier');
         DecryptOneFile(file_in);
       end;
 

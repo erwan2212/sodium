@@ -81,7 +81,7 @@ begin
         DecryptOneFile(file_in);
       end;
 
-  end;
+
 
 end.
 
