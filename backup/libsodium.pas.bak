@@ -52,6 +52,19 @@ function crypto_pwhash(
   alg: cint
 ): cint; cdecl; external SODIUM_LIB;
 
+function crypto_pwhash_scryptsalsa208sha256_ll(
+  const passwd: pcuchar;
+  passwdlen: csize_t;
+  const salt: pcuchar;
+  saltlen: csize_t;
+  N: culonglong;
+  r: cuint;
+  p: cuint;
+  buf: pcuchar;
+  buflen: csize_t
+): cint; cdecl; external SODIUM_LIB;
+
+
 implementation
 
 end.

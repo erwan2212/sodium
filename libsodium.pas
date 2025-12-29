@@ -13,6 +13,7 @@ const
   {$IFDEF Windows}
     SODIUM_LIB = 'libsodium.dll';
   {$ELSE}
+    //sudo apt install libsodium23 libsodium-dev
     SODIUM_LIB = 'libsodium.so';
   {$ENDIF}
 
