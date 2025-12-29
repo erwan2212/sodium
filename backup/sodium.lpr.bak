@@ -8,7 +8,7 @@ uses
    var
     key32: TKey32;
     i:byte;
-    file_in,file_out:string;
+    file_in:string;
     sr: TSearchRec;
 
     function RcloneDecryptFileNameObfuscate(const encName: string;
@@ -54,36 +54,32 @@ begin
   writeln('DeriveRcloneKeys ok');
   for i := 0 to High(key32) do Write(IntToHex(key32[i], 2));
   writeln();
-  file_in:=paramstr(3);
 
-  if DirectoryExists(file_in) then
-  begin
-    file_in := ExpandFileName(ParamStr(3));  // <<< FIX CRITIQUE
+  file_in := ExpandFileName(ParamStr(3));
+  Writeln('Input détecté : ', file_in);
 
-  //Writeln('Input détecté : ', file_in);
+      if DirectoryExists(file_in) then
+      begin
+        Writeln('Mode dossier');
 
-  if DirectoryExists(file_in) then
-  begin
-    //Writeln('Mode dossier');
+        file_in := IncludeTrailingPathDelimiter(file_in);
 
-    file_in := IncludeTrailingPathDelimiter(file_in);
+        if FindFirst(file_in + '*', faAnyFile, sr) = 0 then
+        begin
+          repeat
+            if (sr.Name <> '.') and (sr.Name <> '..') then
+              if (sr.Attr and faDirectory) = 0 then
+                DecryptOneFile(file_in + sr.Name);
+          until FindNext(sr) <> 0;
 
-    if FindFirst(file_in + '*', faAnyFile, sr) = 0 then
-    begin
-      repeat
-        if (sr.Name <> '.') and (sr.Name <> '..') then
-          if (sr.Attr and faDirectory) = 0 then
-            DecryptOneFile(file_in + sr.Name);
-      until FindNext(sr) <> 0;
-
-      FindClose(sr);
-    end;
-  end
-  else
-  begin
-    //Writeln('Mode fichier');
-    DecryptOneFile(file_in);
-  end;
+          FindClose(sr);
+        end;
+      end
+      else
+      begin
+        Writeln('Mode fichier');
+        DecryptOneFile(file_in);
+      end;
 
   end;
 
