@@ -5,3 +5,5 @@
 *.dec
 hexdump.exe
 *.bak
+*.png
+*.jpg
